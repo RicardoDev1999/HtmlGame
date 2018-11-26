@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+	<title></title>
+</head>
+
+<body>
+	<img id="preload-img" style="display:none;">
+	<div id="hero-holder">
+		<div class="hero-holder-r">
+			<img width="50px" height="37px" id="hero">
+		</div>
+	</div>
+</body>
+
+<style>
+	#hero {
+		position: absolute;
+		top: 100px;
+		left: 100px;
+	}
+
+	#hero.left {
+		transform: rotateY(180deg);
+	}
+
+	#hero-holder .hero-holder-r {
+		position: relative;
+		width: 50px;
+		height: 37px;
+		transform: scale(1.2);
+	}
+</style>
+
+<script>
+
+	function Hero() {
+		this.id = "#hero";
+		this.xAccel = 0;
+		this.yAccel = 0;
+		this.xVel = 0;
+		this.yVel = 0;
+
+		this.actualFacingSide = 1;
+
+		this.idleIntreval;
+		this.walkIntreval;
+		this.smrsltIntreval;
+
+		this.idleIntrevalT = 200;
+		this.walkIntrevalT = 200;
+		this.smrsltIntrevalT = 200;
+
+		this.idleSpriteSheet =
+			["adventurer-idle-00.png",
+				"adventurer-idle-01.png",
+				"adventurer-idle-02.png",
+				"adventurer-idle-03.png"];
+		this.walkSpriteSheet =
+			["adventurer-run-00.png",
+				"adventurer-run-01.png",
+				"adventurer-run-02.png",
+				"adventurer-run-03.png",
+				"adventurer-run-04.png",
+				"adventurer-run-05.png"];
+		this.smrsltSpriteSheet = [
+			"adventurer-smrslt-00.png",
+			"adventurer-smrslt-01.png",
+			"adventurer-smrslt-02.png",
+			"adventurer-smrslt-03.png",
+		]
+
+		this.StartIdleAnimation();
+	}
+
+	Hero.prototype = {
+		StartIdleAnimation: function () {
+
+			var thisHero = this;
+			thisHero.StopAnimations();
+
+			var idleActualAnimation = 0;
+
+			thisHero.idleIntreval = setInterval(function () {
+
+				$(thisHero.id).attr("src", "./images/hero/" + thisHero.idleSpriteSheet[idleActualAnimation]);
+
+				if (idleActualAnimation < thisHero.idleSpriteSheet.length - 1) {
+					idleActualAnimation += 1;
+				}
+				else {
+					idleActualAnimation = 0;
+				}
+
+			}, thisHero.idleIntrevalT);
+
+		},
+		StartWalkAnimation: function () {
+			var thisHero = this;
+			thisHero.StopAnimations();
+
+			var walkActualAnimation = 0;
+
+			thisHero.walkIntreval = setInterval(function () {
+
+				$(thisHero.id).attr("src", "./images/hero/" + thisHero.walkSpriteSheet[walkActualAnimation]);
+
+				if (walkActualAnimation < thisHero.walkSpriteSheet.length - 1) {
+					walkActualAnimation += 1;
+				}
+				else {
+					walkActualAnimation = 0;
+				}
+
+			}, thisHero.walkIntrevalT);
+		},
+		StartsmrsltAnimation: function () {
+			var thisHero = this;
+			thisHero.StopAnimations();
+
+			var smrsltActualAnimation = 0;
+
+			thisHero.smrsltIntreval = setInterval(function () {
+
+				$(thisHero.id).attr("src", "./images/hero/" + thisHero.smrsltSpriteSheet[smrsltActualAnimation]);
+
+				if (smrsltActualAnimation < thisHero.smrsltSpriteSheet.length - 1) {
+					smrsltActualAnimation += 1;
+				}
+				else {
+					smrsltActualAnimation = 0;
+				}
+
+			}, thisHero.smrsltIntrevalT);
+		},
+		StopAnimations: function () {
+			clearInterval(this.idleIntreval);
+			clearInterval(this.walkIntreval);
+			clearInterval(this.smrsltIntreval);
+			$(this.id).attr("src", "./images/hero/" + this.idleSpriteSheet[0]);
+		},
+		Walk: function (side) {
+			hero.StartWalkAnimation();
+
+			var heroObj = $(hero.id);
+
+			var leftIncr = "";
+
+			if (side === -1) {
+				heroObj.addClass("left");
+				heroObj.removeClass("right");
+				leftIncr = "+=200";
+			}
+			if (side === 1) {
+				heroObj.removeClass("left");
+				heroObj.addClass("right");
+				leftIncr = "-=200";
+			}
+
+			heroObj.animate({ "left": leftIncr }, 1500, function () {
+				hero.StartIdleAnimation();
+			});
+		},
+		SmrSlt : function(){
+			hero.StartsmrsltAnimation();
+
+			var heroObj = $(hero.id);
+
+			var leftIncr = "";
+
+			if (heroObj.actualFacingSide === -1) {
+				leftIncr = "+=400";
+			}
+			if (heroObj.actualFacingSide === 1) {
+				leftIncr = "-=400";
+			}
+
+			heroObj.animate({ "left": leftIncr }, 2000, function () {
+				hero.StartIdleAnimation();
+			});
+		}
+	};
+
+	var hero = new Hero();
+
+	$(function () {
+		preLoad(hero.idleSpriteSheet);
+		preLoad(hero.walkSpriteSheet);
+	});
+
+	function preLoad(imgArray) {
+		imgArray.forEach(e => {
+			$("#preload-img").attr("src", "./images/hero/" + e);
+		});
+	}
+
+
+</script>
+
+</html>
